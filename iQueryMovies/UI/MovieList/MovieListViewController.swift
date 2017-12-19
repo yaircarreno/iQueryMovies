@@ -24,8 +24,6 @@ class MovieListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         movieListPresenter.attachView(movieListView: self)
-        bindTableView()
-        setUpLoader()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -66,6 +64,10 @@ class MovieListViewController: UIViewController {
             }).disposed(by: disposeBag)
     }
     
+    func bindSearchView() {
+        movieListPresenter.loadSearch(control: searchBar.rx.text.orEmpty)
+    }
+    
     func setUpLoader() {
         activityIndicator.center = self.view.center
         activityIndicator.hidesWhenStopped = true
@@ -83,6 +85,12 @@ class MovieListViewController: UIViewController {
 }
 
 extension MovieListViewController: MovieListView {
+    
+    func setUpView() {
+        setUpLoader()
+        bindTableView()
+        bindSearchView()
+    }
     
     func addMovieList(movieList: [Movie]) {
         print("Total de items de lista: \(movieList.count)")

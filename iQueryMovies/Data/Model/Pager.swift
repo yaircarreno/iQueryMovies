@@ -16,7 +16,12 @@ struct Pager {
     init() {
         self.page = 1
         self.movieList = []
-        self.query = "club"
+        self.query = "batman"
+    }
+    
+    init(query: String) {
+        self.init()
+        self.query = query
     }
     
     mutating func updateItemList(m movies: [Movie]) {
