@@ -24,13 +24,7 @@ class MovieListPresenter {
         self.dataManager = DataManager()
         self.pager = Pager()
         
-        self.dataManager?.getMovies(query: "club", page: pager!.getPage())
-            .observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] movieList in
-                self.pager?.updateItemList(m: movieList)
-                self.movieListView?.addMovieList(movieList: (self.pager?.getItemList())!)
-            })
-            .disposed(by: disposeBag)
+        loadMovies()
     }
     
     func detachView() {
@@ -38,13 +32,16 @@ class MovieListPresenter {
     }
     
     func loadMovies() {
+        movieListView?.showLoader(show: true)
         self.dataManager?.getMovies(query: "club", page: pager!.getPage())
             .observeOn(MainScheduler.instance)
             .subscribe(onNext: { [unowned self] movieList in
                 self.pager?.updateItemList(m: movieList)
                 self.movieListView?.addMovieList(movieList: (self.pager?.getItemList())!)
+                self.movieListView?.showLoader(show: false)
                 }, onError: { error in
                     print(error)
+                    self.movieListView?.showLoader(show: false)
             })
             .disposed(by: disposeBag)
     }

@@ -15,14 +15,17 @@ class MovieListViewController: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    let moviesTable: Variable<[Movie]> = Variable([])
-    let movieListPresenter = MovieListPresenter()
     let disposeBag = DisposeBag()
+    let movieListPresenter = MovieListPresenter()
+    
+    private let moviesTable: Variable<[Movie]> = Variable([])
+    private var activityIndicator:UIActivityIndicatorView = UIActivityIndicatorView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         movieListPresenter.attachView(movieListView: self)
         bindTableView()
+        setUpLoader()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -35,7 +38,7 @@ class MovieListViewController: UIViewController {
     }
     
     func bindTableView() {
-        
+        // Bind table to react to movie list.
         moviesTable.asObservable()
             .bind(to: tableView.rx.items) {
                 (tableView: UITableView, index: Int, movie: Movie) in
@@ -45,13 +48,15 @@ class MovieListViewController: UIViewController {
                 return cell }
             .disposed(by: disposeBag)
         
+        // Select item from the table
         tableView.rx
             .modelSelected(Movie.self)
-            .subscribe(onNext: { model in
-                print("\(model) was selected")
+            .subscribe(onNext: { [weak self] movie in
+                self?.performSegue(withIdentifier: "showDetail", sender: movie)
             })
             .disposed(by: disposeBag)
         
+        // Reach bottom of movie list
         tableView.rx.willDisplayCell
             .subscribe(onNext: { [unowned self] cellInfo in
                 let (_, indexPath) = cellInfo
@@ -60,12 +65,36 @@ class MovieListViewController: UIViewController {
                 }
             }).disposed(by: disposeBag)
     }
+    
+    func setUpLoader() {
+        activityIndicator.center = self.view.center
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.gray
+        view.addSubview(activityIndicator)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "showDetail") {
+            let movieDetailViewController = segue.destination as! MovieDetailViewController
+            let movie = sender as! Movie
+            movieDetailViewController.selectedMovie = movie
+        }
+    }
 }
 
 extension MovieListViewController: MovieListView {
+    
     func addMovieList(movieList: [Movie]) {
         print("Total de items de lista: \(movieList.count)")
         moviesTable.value = movieList
         tableView.reloadData()
+    }
+    
+    func showLoader(show: Bool) {
+        if (show) {
+            activityIndicator.startAnimating()
+        } else {
+            activityIndicator.stopAnimating()
+        }
     }
 }

@@ -10,4 +10,5 @@ import Foundation
 
 protocol MovieListView {
     func addMovieList(movieList: [Movie])
+    func showLoader(show: Bool)
 }

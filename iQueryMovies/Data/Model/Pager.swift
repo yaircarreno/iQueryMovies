@@ -12,7 +12,6 @@ struct Pager {
     var page: Int
     var query: String
     var movieList: [Movie]
-    static var LIMIT: String = "10"
     
     init() {
         self.page = 1
