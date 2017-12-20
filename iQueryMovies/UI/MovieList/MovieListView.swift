@@ -8,8 +8,9 @@
 
 import Foundation
 
-protocol MovieListView {
+protocol MovieListView: NSObjectProtocol {
     func setUpView()
     func addMovieList(movieList: [Movie])
     func showLoader(show: Bool)
+    func hideKeyBoard(hide: Bool)
 }

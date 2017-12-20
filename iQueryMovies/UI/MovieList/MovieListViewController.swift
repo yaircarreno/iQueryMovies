@@ -26,11 +26,6 @@ class MovieListViewController: UIViewController {
         movieListPresenter.attachView(movieListView: self)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        movieListPresenter.detachView()
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -104,5 +99,9 @@ extension MovieListViewController: MovieListView {
         } else {
             activityIndicator.stopAnimating()
         }
+    }
+    
+    func hideKeyBoard(hide: Bool) {
+        searchBar.endEditing(hide)
     }
 }

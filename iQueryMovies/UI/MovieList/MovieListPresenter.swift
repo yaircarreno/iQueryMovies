@@ -12,7 +12,7 @@ import RxCocoa
 
 class MovieListPresenter {
     
-    private var movieListView: MovieListView?
+    weak private var movieListView: MovieListView?
     private var dataManager: DataManager?
     private var pager: Pager?
     
@@ -30,23 +30,10 @@ class MovieListPresenter {
         self.movieListView?.setUpView()
         
         //Setup subjects used to pager
-        self.pagerSubject
-            .flatMapLatest { pager -> Observable<[Movie]> in
-                if pager.getPage().isEmpty {
-                    return .just([])
-                }
-                return self.sendRequestToApiObservable(pager: pager)!
-                    .catchErrorJustReturn([])
-            }.observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] movieList in
-                self.successfulResult(movieList: movieList)
-                }, onError: { error in
-                    self.failResult(error: error)
-            })
-            .disposed(by: disposeBag)
+        self.setUpPagerRx()
         
-        //Load the firts results
-        loadMovies()
+        //Load the first movie list
+        self.loadMovies()
     }
     
     func detachView() {
@@ -60,6 +47,23 @@ class MovieListPresenter {
             .distinctUntilChanged()
             .map { query in Pager(query: query)}
             .do(onNext: { pager in self.pager = pager})
+            .flatMapLatest { pager -> Observable<[Movie]> in
+                if pager.getPage().isEmpty {
+                    return .just([])
+                }
+                return self.sendRequestToApiObservable(pager: pager)!
+                    .catchErrorJustReturn([])
+            }.observeOn(MainScheduler.instance)
+            .subscribe(onNext: { [unowned self] movieList in
+                self.successfulResult(movieList: movieList)
+                }, onError: { error in
+                    self.failResult(error: error)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func setUpPagerRx() {
+        self.pagerSubject
             .flatMapLatest { pager -> Observable<[Movie]> in
                 if pager.getPage().isEmpty {
                     return .just([])
@@ -92,6 +96,7 @@ class MovieListPresenter {
         self.pager?.updateItemList(m: movieList)
         self.movieListView?.addMovieList(movieList: (self.pager?.getItemList())!)
         self.movieListView?.showLoader(show: false)
+        self.movieListView?.hideKeyBoard(hide: true)
     }
     
     private func failResult(error: Any) {
