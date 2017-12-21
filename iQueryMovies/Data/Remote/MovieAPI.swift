@@ -38,12 +38,13 @@ struct MovieAPI {
     private static func movie(fromJSON json: [String : Any]) -> Movie? {
         guard
             let title = json["original_title"] as? String,
+            let release = json["release_date"] as? String,
             let overview = json["overview"] as? String else {
                 // Don't have enough information to construct a movie
                 return nil
         }
         let poster_path = nullToNil(value: json["poster_path"] as AnyObject)
-        return Movie(title: title, overview: overview, poster_path: poster_path!)
+        return Movie(title: title, overview: overview, poster_path: poster_path!, release_date: release)
     }
     
     private static func nullToNil(value : AnyObject?) -> String? {

@@ -12,7 +12,7 @@ import RxCocoa
 
 class MovieListPresenter {
     
-    weak private var movieListView: MovieListView?
+    private var movieListView: MovieListView?
     private var dataManager: DataManager?
     private var pager: Pager?
     

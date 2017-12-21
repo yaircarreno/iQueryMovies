@@ -9,5 +9,5 @@
 import Foundation
 
 protocol MovieDetailView {
-    
+    func setUpView()
 }

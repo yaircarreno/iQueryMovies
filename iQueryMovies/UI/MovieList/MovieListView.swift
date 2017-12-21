@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol MovieListView: NSObjectProtocol {
+protocol MovieListView {
     func setUpView()
     func addMovieList(movieList: [Movie])
     func showLoader(show: Bool)

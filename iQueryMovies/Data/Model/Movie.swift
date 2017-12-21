@@ -12,10 +12,12 @@ struct Movie {
     var title: String?
     var overview: String?
     var poster_path: String?
+    var release_date: String?
     
-    init(title: String, overview: String, poster_path: String) {
+    init(title: String, overview: String, poster_path: String, release_date: String) {
         self.title = title
         self.overview = overview
         self.poster_path = poster_path
+        self.release_date = release_date
     }
 }

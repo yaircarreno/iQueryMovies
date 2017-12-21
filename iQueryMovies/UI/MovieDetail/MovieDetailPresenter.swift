@@ -10,4 +10,16 @@ import Foundation
 
 class MovieDetailPresenter {
     
+     private var movieDetailView: MovieDetailView?
+    
+    func attachView(movieDetailView: MovieDetailView) {
+        self.movieDetailView = movieDetailView
+        
+        //Setup init configuration view
+        self.movieDetailView?.setUpView()
+    }
+    
+    func detachView() {
+        self.movieDetailView = nil
+    }
 }
