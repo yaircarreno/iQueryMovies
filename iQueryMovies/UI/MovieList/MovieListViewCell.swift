@@ -18,8 +18,11 @@ class MovieListViewCell: UITableViewCell {
     func configure(for movie: Movie) {
         titleLabel.text = movie.title
         overviewLabel.text = movie.overview
-        let url = URL(string: MovieAPI.baseImageURLString + movie.poster_path!)!
-        posterImageView.af_setImage(withURL: url)
+        
+        if movie.poster_path != nil {
+            let url = URL(string: MovieAPI.baseImageURLString + movie.poster_path!)!
+            posterImageView.af_setImage(withURL: url)
+        }
     }
     
     override func prepareForReuse() {

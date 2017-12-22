@@ -7,17 +7,34 @@
 //
 
 import Foundation
+import ObjectMapper
 
-struct Movie {
+struct MovieResponse: Mappable {
+    var totalPages: Int?
+    var results: [Movie]?
+    
+    init?(map: Map){
+    }
+    
+    mutating func mapping(map: Map) {
+        totalPages <- map["total_pages"]
+        results <- map["results"]
+    }
+}
+
+struct Movie: Mappable {
     var title: String?
     var overview: String?
     var poster_path: String?
     var release_date: String?
     
-    init(title: String, overview: String, poster_path: String, release_date: String) {
-        self.title = title
-        self.overview = overview
-        self.poster_path = poster_path
-        self.release_date = release_date
+    init?(map: Map) {
+    }
+    
+    mutating func mapping(map: Map) {
+        title <- map["original_title"]
+        overview <- map["overview"]
+        poster_path <- map["poster_path"]
+        release_date <- map["release_date"]
     }
 }

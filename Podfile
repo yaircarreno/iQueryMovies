@@ -11,4 +11,5 @@ target 'iQueryMovies' do
     pod 'Alamofire', '~> 4.5'
     pod 'AlamofireImage', '~> 3.3'
     pod 'RxAlamofire'
+    pod 'AlamofireObjectMapper', '~> 5.0'
 end

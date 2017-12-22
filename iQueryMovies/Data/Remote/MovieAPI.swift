@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import RxAlamofire
+import ObjectMapper
 
 struct MovieAPI {
     
@@ -21,37 +22,14 @@ struct MovieAPI {
     static func getMovies(query: String, page: String) -> Observable<[Movie]> {
         return
             json(.get, baseURLString, parameters: ["query": query, "page": page, "api_key": apiKey])
-            .map{ result in  toMovieArray(fromJSON: result) }
-            .flatMap {
-                arrayMovies in Observable.from(arrayMovies)
-                    .map{ movieJson in movie(fromJSON: movieJson)! }
-            }.toArray()
-            .subscribeOn(globalScheduler)
+                .map{ result in toMovieArray(fromJSON: result)}
+                .subscribeOn(globalScheduler)
     }
     
-    private static func toMovieArray(fromJSON jsonResult: Any) -> [[String:Any]] {
-        let jsonDictionary = jsonResult as? [AnyHashable:Any]
-        let moviesArray = jsonDictionary!["results"] as? [[String:Any]]
-        return moviesArray!
-    }
-    
-    private static func movie(fromJSON json: [String : Any]) -> Movie? {
-        guard
-            let title = json["original_title"] as? String,
-            let release = json["release_date"] as? String,
-            let overview = json["overview"] as? String else {
-                // Don't have enough information to construct a movie
-                return nil
+    private static func toMovieArray(fromJSON jsonResult: Any) -> [Movie] {
+        guard let movieResponse = Mapper<MovieResponse>().map(JSONObject: jsonResult) else {
+            return []
         }
-        let poster_path = nullToNil(value: json["poster_path"] as AnyObject)
-        return Movie(title: title, overview: overview, poster_path: poster_path!, release_date: release)
-    }
-    
-    private static func nullToNil(value : AnyObject?) -> String? {
-        if value is NSNull {
-            return "/7k9db7pJyTaVbz3G4eshGltivR1.jpg"
-        } else {
-            return value as? String
-        }
+        return movieResponse.results!
     }
 }
