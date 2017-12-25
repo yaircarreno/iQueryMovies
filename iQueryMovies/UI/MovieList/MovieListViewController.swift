@@ -53,7 +53,7 @@ class MovieListViewController: UIViewController {
         tableView.rx.willDisplayCell
             .subscribe(onNext: { [unowned self] cellInfo in
                 let (_, indexPath) = cellInfo
-                if indexPath.row + 1 == self.movieListPresenter.getMovieCount() {
+                if (indexPath.row + 1 >= self.movieListPresenter.getPager().getItemCount() && !self.movieListPresenter.getPager().getLastPage()) {
                     self.movieListPresenter.loadMovies()
                 }
             }).disposed(by: disposeBag)

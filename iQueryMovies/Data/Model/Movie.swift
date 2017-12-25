@@ -11,6 +11,7 @@ import ObjectMapper
 
 struct MovieResponse: Mappable {
     var totalPages: Int?
+    var totalResults:Int?
     var results: [Movie]?
     
     init?(map: Map){
@@ -18,6 +19,7 @@ struct MovieResponse: Mappable {
     
     mutating func mapping(map: Map) {
         totalPages <- map["total_pages"]
+        totalResults <- map["total_results"]
         results <- map["results"]
     }
 }

@@ -9,11 +9,14 @@
 import Foundation
 
 struct Pager {
-    var page: Int
-    var query: String
-    var movieList: [Movie]
+    private var lastPage: Bool
+    private var page: Int
+    private var query: String
+    private var movieList: [Movie]
+    static let limit: Int = 20
     
     init() {
+        self.lastPage = false
         self.page = 1
         self.movieList = []
         self.query = "batman"
@@ -37,7 +40,19 @@ struct Pager {
         return self.movieList.count
     }
     
+    func getLastPage() -> Bool {
+        return self.lastPage
+    }
+    
+    mutating func setLastPage(isLastPage: Bool) -> Void {
+        self.lastPage = isLastPage
+    }
+    
     func getPage() -> String {
         return String(self.page)
+    }
+    
+    func getQuery() -> String {
+        return self.query
     }
 }

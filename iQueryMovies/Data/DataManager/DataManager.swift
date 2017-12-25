@@ -12,7 +12,7 @@ import RxAlamofire
 
 class DataManager {
     
-    func getMovies(query: String, page: String) -> Observable<[Movie]> {
+    func getMovies(query: String, page: String) -> Observable<MovieResponse?> {
         return MovieAPI.getMovies(query: query, page: page)
     }
 }

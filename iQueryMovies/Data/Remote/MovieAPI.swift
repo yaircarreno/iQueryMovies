@@ -19,17 +19,17 @@ struct MovieAPI {
     
     static let globalScheduler = ConcurrentDispatchQueueScheduler(queue: DispatchQueue.global())
     
-    static func getMovies(query: String, page: String) -> Observable<[Movie]> {
+    static func getMovies(query: String, page: String) -> Observable<MovieResponse?> {
         return
             json(.get, baseURLString, parameters: ["query": query, "page": page, "api_key": apiKey])
-                .map{ result in toMovieArray(fromJSON: result)}
+                .map{ result in toMapper(fromJSON: result)}
                 .subscribeOn(globalScheduler)
     }
     
-    private static func toMovieArray(fromJSON jsonResult: Any) -> [Movie] {
+    private static func toMapper(fromJSON jsonResult: Any) -> MovieResponse? {
         guard let movieResponse = Mapper<MovieResponse>().map(JSONObject: jsonResult) else {
-            return []
+            return nil
         }
-        return movieResponse.results!
+        return movieResponse
     }
 }

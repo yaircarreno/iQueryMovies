@@ -47,15 +47,15 @@ class MovieListPresenter {
             .distinctUntilChanged()
             .map { query in Pager(query: query)}
             .do(onNext: { pager in self.pager = pager})
-            .flatMapLatest { pager -> Observable<[Movie]> in
+            .flatMapLatest { pager -> Observable<MovieResponse?> in
                 if pager.getPage().isEmpty {
-                    return .just([])
+                    return .just(nil)
                 }
                 return self.sendRequestToApiObservable(pager: pager)!
-                    .catchErrorJustReturn([])
+                    .catchErrorJustReturn(nil)
             }.observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] movieList in
-                self.successfulResult(movieList: movieList)
+            .subscribe(onNext: { [unowned self] movieResponse in
+                self.successfulResult(movieResponse: movieResponse!)
                 }, onError: { error in
                     self.failResult(error: error)
             })
@@ -64,15 +64,15 @@ class MovieListPresenter {
     
     func setUpPagerRx() {
         self.pagerSubject
-            .flatMapLatest { pager -> Observable<[Movie]> in
+            .flatMapLatest { pager -> Observable<MovieResponse?> in
                 if pager.getPage().isEmpty {
-                    return .just([])
+                    return .just(nil)
                 }
                 return self.sendRequestToApiObservable(pager: pager)!
-                    .catchErrorJustReturn([])
+                    .catchErrorJustReturn(nil)
             }.observeOn(MainScheduler.instance)
-            .subscribe(onNext: { [unowned self] movieList in
-                self.successfulResult(movieList: movieList)
+            .subscribe(onNext: { [unowned self] movieResponse in
+                self.successfulResult(movieResponse: movieResponse!)
                 }, onError: { error in
                     self.failResult(error: error)
             })
@@ -84,19 +84,21 @@ class MovieListPresenter {
         pagerSubject.onNext(pager!)
     }
     
-    func getMovieCount() -> Int {
-        return pager!.getItemCount()
+    func getPager() -> Pager {
+        return self.pager!
     }
     
-    private func sendRequestToApiObservable(pager: Pager) -> Observable<[Movie]>? {
-        return self.dataManager?.getMovies(query: pager.query, page: pager.getPage())
+    private func sendRequestToApiObservable(pager: Pager) -> Observable<MovieResponse?>? {
+        return self.dataManager?.getMovies(query: pager.getQuery(), page: pager.getPage())
     }
     
-    private func successfulResult(movieList: [Movie]) {
-        self.pager?.updateItemList(m: movieList)
+    private func successfulResult(movieResponse: MovieResponse) {
+        if (movieResponse.totalResults! < Pager.limit) {
+            self.pager?.setLastPage(isLastPage: true)
+        }
+        self.pager?.updateItemList(m: movieResponse.results!)
         self.movieListView?.addMovieList(movieList: (self.pager?.getItemList())!)
         self.movieListView?.showLoader(show: false)
-        self.movieListView?.hideKeyBoard(hide: true)
     }
     
     private func failResult(error: Any) {
