@@ -2,4 +2,4 @@
 
 ## Screenshot
 
-![ScreenShot](https://github.com/yaircarreno/QueryMovies/blob/master/screenshot/iQueryMovies.gif)
+![ScreenShot](https://github.com/yaircarreno/iQueryMovies/blob/master/screenshot/iQueryMovies.gif)
